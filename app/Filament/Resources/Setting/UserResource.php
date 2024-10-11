@@ -2,16 +2,19 @@
 
 namespace App\Filament\Resources\Setting;
 
-use App\Filament\Resources\Setting\UserResource\Pages;
-use App\Filament\Resources\Setting\UserResource\RelationManagers;
-use App\Models\User;
+use stdClass;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\User;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\Setting\UserResource\Pages;
+use App\Filament\Resources\Setting\UserResource\RelationManagers;
 
 class UserResource extends Resource
 {
@@ -27,19 +30,19 @@ class UserResource extends Resource
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->maxLength(255),
-                Forms\Components\Select::make('roles')
-                    ->relationship('roles', 'name')
-                    ->preload()
-                    ->searchable(),
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+                            ->maxLength(255),
+                        Forms\Components\Select::make('roles')
+                            ->relationship('roles', 'name')
+                            ->preload()
+                            ->searchable(),
                     ])->columns(2),
 
             ]);
@@ -49,6 +52,18 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('index')
+                    ->label('#')
+                    ->state(
+                        static function (HasTable $livewire, stdClass $rowLoop): string {
+                            return (string) (
+                                $rowLoop->iteration +
+                                ($livewire->getTableRecordsPerPage() * (
+                                    $livewire->getTablePage() - 1
+                                ))
+                            );
+                        }
+                    ),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
@@ -96,5 +111,10 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 }
