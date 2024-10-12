@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\RiwayatTransaksiController;
 use Illuminate\Support\Facades\Route;
+use Livewire\Mechanisms\FrontendAssets\FrontendAssets;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,8 +16,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+// Route Frontend
 Route::get('/', function () {
-    return redirect('/admin');
+    return view('Shop.index');
 });
 
-Route::get('/webhook',[RiwayatTransaksiController::class,'Transaksi']);
+Route::get('/kontak', function () {
+    return view('Shop.kontak');
+});
+Route::get('/produk', function () {
+    return view('Shop.produk');
+});
+Route::get('/tentang-kami', function () {
+    return view('Shop.about');
+});
+
+Route::get('/produk/checkout', function () {
+    return view('Shop.res.checkout');
+});
+
+Route::get('/produk/detail-produk', function () {
+    return view('Shop.res.detail-produk');
+});
