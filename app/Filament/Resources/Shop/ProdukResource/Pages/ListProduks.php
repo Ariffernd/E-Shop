@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\Shop\ProdukResource\Pages;
 
-use App\Filament\Resources\Shop\ProdukResource;
 use Filament\Actions;
+use App\Livewire\ProdukWidget;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\Shop\ProdukResource;
 
 class ListProduks extends ListRecords
 {
@@ -14,6 +15,12 @@ class ListProduks extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+        ];
+    }
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            ProdukWidget::class
         ];
     }
 }

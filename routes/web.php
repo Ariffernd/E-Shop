@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\RiwayatTransaksiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/admin');
 });
+
+Route::get('/webhook',[RiwayatTransaksiController::class,'Transaksi']);

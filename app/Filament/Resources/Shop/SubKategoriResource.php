@@ -21,7 +21,7 @@ class SubKategoriResource extends Resource
     protected static ?string $model = SubKategori::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
-    protected static ?string $navigationGroup = 'Pengaturan Toko';
+    protected static ?string $navigationGroup = 'Pengaturan Produk';
 
     public static function form(Form $form): Form
     {
