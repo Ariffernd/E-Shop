@@ -7,10 +7,12 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Shop\Produk;
+use Illuminate\Http\Request;
 use App\Models\Shop\Kategori;
 use App\Models\Shop\SubKategori;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use App\Http\Controllers\ProdukController;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Shop\ProdukResource\Pages;
 use App\Filament\Resources\Shop\ProdukResource\RelationManagers;
@@ -75,15 +77,23 @@ class ProdukResource extends Resource
 
                                 Forms\Components\TextInput::make('harga')
                                     ->label('Harga Produk')
-                                    ->required(),
+                                    ->required()
+                                    ->numeric()
+                                    ->prefix('Rp')
+                                    ->inputMode('numeric'),
                                 Forms\Components\TextInput::make('stok')
-                                    ->label('Stock Produk')
+                                    ->label('Stok Produk')
                                     ->required()
                                     ->numeric(),
                             ])->columns(2),
                     ]),
                 Forms\Components\Group::make()
                     ->schema([
+                        Forms\Components\Section::make('Publish Produk')
+                            ->schema([
+                                Forms\Components\Toggle::make('status')
+                                    ->label('Status Publish Produk'),
+                            ]),
                         Forms\Components\Section::make('Upload Foto Produk')
                             ->description('Foto produk yang pertama kali diupload akan menjadi gambar utama pada list produk!')
                             ->schema([
@@ -94,11 +104,7 @@ class ProdukResource extends Resource
                                     ->required(),
 
                             ]),
-                        Forms\Components\Section::make('Publish Produk')
-                            ->schema([
-                                Forms\Components\Toggle::make('status')
-                                    ->label('Status Publish Produk'),
-                            ]),
+
 
 
                     ]),
@@ -124,16 +130,22 @@ class ProdukResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('SubKategori.sub_kategori')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('deskripsi')
+                    ->label('Deskripsi'),
                 Tables\Columns\TextColumn::make('stok')
                     ->sortable(),
-                Tables\Columns\IconColumn::make('status')
-                    ->boolean(),
+                Tables\Columns\ToggleColumn::make('status')
+                    ->afterStateUpdated(function ($record, $state) {
+                        // Runs after the state is saved to the database.
+                        app()->make(ProdukController::class)->NotifikasiProdukEdit($record);
+                    }),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
