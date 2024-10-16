@@ -14,7 +14,7 @@ class CreateProduk extends CreateRecord
     protected function after(): void
     {
         app()->make(ProdukController::class)->NotifikasiProdukBaru($this->record);
-    }
+    }   
 
     protected function getRedirectUrl(): string
     {

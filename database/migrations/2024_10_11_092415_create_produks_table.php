@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('berat_barang');
             $table->string('satuan');
             $table->integer('stok')->default(0);
-            $table->decimal('harga',10,2);
+            $table->integer('harga');
             $table->boolean('status')->default(false);
             $table->timestamps();
         });

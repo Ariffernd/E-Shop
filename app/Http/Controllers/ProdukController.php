@@ -20,19 +20,18 @@ class ProdukController extends Controller
     public function DetailProduk($id)
     {
         $detail_produk = Produk::find($id);
+        // dd($detail_produk);
         return view('Shop.res.detail-produk', compact('detail_produk'));
     }
 
     public function DataProduk(Request $request)
     {
-        // $id = $request->input('id');
-        // $nama_produk = $request->input('nama_produk');
-        // $harga = $request->input('harga');
+        $id = $request->input('id');
+        $nama_produk = $request->input('nama_produk');
+        $harga = $request->input('harga');
+        $harga = number_format($harga, 0, '', '');
 
-        $data = $request->all();
-
-        dd($data);
-        return view('Shop.res.checkout');
+        return view('Shop.res.checkout', compact('id', 'nama_produk', 'harga'));
     }
 
 
