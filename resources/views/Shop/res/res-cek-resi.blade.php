@@ -14,7 +14,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <title>ABFT.Co</title>
 </head>
 
@@ -22,42 +25,28 @@
 
     @include('Shop.template.navbar')
 
-    <h1 class="text-center dark:text-white text-4xl my-4">Daftar Produk</h1>
-    <hr class="border-t-4 border-gray-300 my-4 w-full justify-center">
 
-    <div class="mx-80 my-20 dark:text-white">
-        <div class="grid grid-cols-2">
-            <div>
+    <div class="container mx-auto px-4 lg:px-64 py-10 dark:text-white">
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 
-            </div>
-            <div>
-                <h1 class="dark:text-white text-4xl">{{$detail_produk->nama_produk}}</h1>
-                <h1 class="mt-8 float-end ">Rp{{ number_format($detail_produk->harga, 0, ',', '.') }}</h1>
-            </div>
-            <div></div>
-            <div>4</div>
+            <ol class=" w-full space-y-4 sm:flex sm:space-x-8 sm:space-y-0 rtl:space-x-reverse">
+                @foreach (json_decode($jsonDetails, true) as $track )
 
-
-        </div>
-        <div class="text-left float-start my-5 m">
-            <p>
-                {{$detail_produk->deskripsi}}
-            </p>
-        </div>
-        <div class="my-5 bg-slate-600 float-end">
-            <form action="{{ route('bayar') }}" method="POST">
-                @csrf
-                <input type="hidden" name="id" value="{{ $detail_produk->id }}">
-                <input type="hidden" name="nama_produk" value="{{ $detail_produk->nama_produk }}">
-                <input type="hidden" name="harga" value="{{ $detail_produk->harga }}">
-
-                <button
-                    class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-                    type="submit">Check Out</button>
-            </form>
+                <li class="flex items-center text-blue-600 dark:text-blue-500 space-x-2.5 rtl:space-x-reverse">
+                    <span
+                        class="flex items-center justify-center w-8 h-8 border border-blue-600 rounded-full shrink-0 dark:border-blue-500">
+                        {{$loop->iteration}}
+                    </span>
+                    <span>
+                        <h3 class="font-medium leading-tight">{{$track['status']}}</h3>
+                        <p class="text-sm">{{$track['dateTime']}}</p>
+                    </span>
+                </li>
+                @endforeach
         </div>
 
     </div>
+
 
 
     @include('Shop.template.footer')
@@ -103,6 +92,11 @@
                 }
             }
 
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('.SelectSearch').select2();
         });
     </script>
 </body>

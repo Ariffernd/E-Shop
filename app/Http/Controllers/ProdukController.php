@@ -34,6 +34,39 @@ class ProdukController extends Controller
         return view('Shop.res.checkout', compact('id', 'nama_produk', 'harga'));
     }
 
+    public function Bayar(Request $request)
+    {
+        $qty = 2;
+        $ongkir = 10000;
+        $harga = $request->input('harga');
+        $total = abs($harga * $qty) ;
+        $produk = $request->input('nama_produk');
+
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = false;
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+
+        $params = [
+            'transaction_details' => [
+                'order_id' => rand(),
+                'gross_amount' => $total,
+            ],
+            'item_details' => [
+                [
+                    'id' => $produk,
+                    'name' => $produk,
+                    'price' => $total,
+                    'quantity' => $qty,
+                ]
+            ],
+        ];
+        $snapToken = Snap::getSnapToken($params);
+
+        // Pass Snap Token to view
+        return view('Shop.res.checkout', ['snapToken' => $snapToken],);
+    }
+
 
 
     public function NotifikasiProdukBaru(Produk $produk)
@@ -50,7 +83,6 @@ class ProdukController extends Controller
         $harga = $produk->harga;
         $deskripsi = $produk->deskripsi;
 
-
         $chat = [
             'appkey' => $appkey,
             'authkey' => $authkey,
@@ -62,12 +94,13 @@ class ProdukController extends Controller
         $response = Http::post($url, $chat);
         return $response;
     }
+
+
     public function NotifikasiProdukEdit(Produk $produk)
     {
         $appkey = '4847fb2c-c144-409e-93ab-23128b1c9a00';
         $authkey = config('whatsapp.WATSAP_PANEL_KEY');
         $url = config('whatsapp.WATSAP_BASE_URL');
-
 
         $user = auth()->user()->name;
         $kategori = $produk->Kategori->kategori;
@@ -76,7 +109,6 @@ class ProdukController extends Controller
         $harga = $produk->harga;
         $deskripsi = $produk->deskripsi;
         $status = $produk->status;
-
 
         $chat = [
             'appkey' => $appkey,
@@ -88,26 +120,5 @@ class ProdukController extends Controller
         ];
         $response = Http::post($url, $chat);
         return $response;
-    }
-
-    public function bayar(Response $response)
-    {
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = false;
-        \Midtrans\Config::$isSanitized = true;
-        \Midtrans\Config::$is3ds = true;
-
-        $params = array(
-            'transaction_details' => array(
-                'order_id' => rand(),
-                'gross_amount' => 10000,
-            ),
-
-        );
-
-        $snapToken = Snap::getSnapToken($params);
-
-        // Pass Snap Token to view
-        return view('Shop.index', ['snapToken' => $snapToken]);
     }
 }

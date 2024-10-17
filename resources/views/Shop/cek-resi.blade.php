@@ -14,7 +14,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <title>ABFT.Co</title>
 </head>
 
@@ -22,42 +25,36 @@
 
     @include('Shop.template.navbar')
 
-    <h1 class="text-center dark:text-white text-4xl my-4">Daftar Produk</h1>
-    <hr class="border-t-4 border-gray-300 my-4 w-full justify-center">
-
-    <div class="mx-80 my-20 dark:text-white">
-        <div class="grid grid-cols-2">
-            <div>
-
-            </div>
-            <div>
-                <h1 class="dark:text-white text-4xl">{{$detail_produk->nama_produk}}</h1>
-                <h1 class="mt-8 float-end ">Rp{{ number_format($detail_produk->harga, 0, ',', '.') }}</h1>
-            </div>
-            <div></div>
-            <div>4</div>
 
 
-        </div>
-        <div class="text-left float-start my-5 m">
-            <p>
-                {{$detail_produk->deskripsi}}
-            </p>
-        </div>
-        <div class="my-5 bg-slate-600 float-end">
-            <form action="{{ route('bayar') }}" method="POST">
+    <div class="container mx-auto px-4 lg:px-64 py-10 dark:text-white">
+        <div class="my-48 mx-48">
+            <form action="{{route('resi-tracking')}}" method="post">
                 @csrf
-                <input type="hidden" name="id" value="{{ $detail_produk->id }}">
-                <input type="hidden" name="nama_produk" value="{{ $detail_produk->nama_produk }}">
-                <input type="hidden" name="harga" value="{{ $detail_produk->harga }}">
+                <div>
+                    <select name="kurir" type="text"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg SelectSearch focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <option selected disabled>Pilih Ekspedisi</option>
+                        @foreach ($data as $kur)
+                            <option class="flex-wrap" value="{{ $kur['id'] }}">{{ $kur['name'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-                <button
-                    class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-                    type="submit">Check Out</button>
+                <div class="mt-3">
+                    <div class="mb-5">
+                        <input name="resi" type="text" id="large-input"
+                            class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">CEK RESI</button>
+                </div>
             </form>
         </div>
 
     </div>
+
 
 
     @include('Shop.template.footer')
@@ -103,6 +100,11 @@
                 }
             }
 
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('.SelectSearch').select2();
         });
     </script>
 </body>

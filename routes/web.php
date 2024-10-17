@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\CekResiController;
 use App\Http\Controllers\ProdukController;
-use App\Http\Controllers\RiwayatTransaksiController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Mechanisms\FrontendAssets\FrontendAssets;
 
@@ -16,48 +16,17 @@ use Livewire\Mechanisms\FrontendAssets\FrontendAssets;
 |
 */
 
-
-//midtrans route
 Route::get('/', function(){
     return view('Shop.index');
 });
 
-
-
-Route::get('/', [ProdukController::class,'bayar']);
-Route::post('/midtrans/callback', 'MidtransController@callback');
-
-
 Route::get('/produk',[ProdukController::class,'index'])->name('list-produk');
 Route::get('/detail-produk/{id}', [ProdukController::class, 'DetailProduk'])->name('detail-produk');
-
-Route::post('/check-out',[ProdukController::class, 'DataProduk'])->name('co');
 Route::get('/bayar',[ProdukController::class,'DataProduk'])->name('bayar-belanja');
+Route::post('/check-out', [ProdukController::class,'Bayar'])->name('bayar');
 
-// Route Frontend
-
-// route::get('/',function(){
-//     return view('Shop.index');
-// });
-
-// Route::get('/kontak', function () {
-//     return view('Shop.kontak');
-// });
-
-
-// Route::get('/produk', function () {
-//     return view('Shop.produk');
-// });
-// Route::get('/tentang-kami', function () {
-//     return view('Shop.about');
-// });
-
-// Route::get('/produk/checkout', function () {
-//     return view('Shop.res.checkout');
-// });
-
-// Route::get('/produk/detail-produk', function () {
-//     return view('Shop.res.detail-produk');
-// });
-
+// CEK RESI
+Route::get('/cek-resi',[CekResiController::class,'Kurir']);
+Route::post('/cek-resi',[CekResiController::class,'CekResi'])->name('resi-tracking');
+Route::get('/tracking-resi',[CekResiController::class,'LacakResi'])->name('tracking-resi');
 
