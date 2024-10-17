@@ -13,7 +13,7 @@ class ProdukController extends Controller
 {
     public function index()
     {
-        $produk = Produk::all();
+        $produk = Produk::where('status', true)->get();
         return view('Shop.produk', compact('produk'));
     }
 
