@@ -14,7 +14,8 @@ class ListProduks extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Tambah Produk Baru'),
         ];
     }
     protected function getHeaderWidgets(): array

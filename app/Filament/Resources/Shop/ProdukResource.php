@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Shop;
 
+use App\Filament\Exports\Shop\ProdukExporter;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\Shop\Kategori;
 use App\Models\Shop\SubKategori;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\ExportAction;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Controllers\ProdukController;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -121,7 +123,8 @@ class ProdukResource extends Resource
                     ->ring(3),
                 Tables\Columns\TextColumn::make('nama_produk')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(25),
                 Tables\Columns\TextColumn::make('harga')
                     ->money('IDR')
                     ->sortable()
@@ -131,8 +134,9 @@ class ProdukResource extends Resource
                 Tables\Columns\TextColumn::make('SubKategori.sub_kategori')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('deskripsi')
-                    ->label('Deskripsi'),
-                Tables\Columns\TextColumn::make('stok')
+                    ->label('Deskripsi')
+                    ->limit(25),
+                Tables\Columns\TextInputColumn::make('stok')
                     ->sortable(),
                 Tables\Columns\ToggleColumn::make('status')
                     ->afterStateUpdated(function ($record, $state) {
@@ -146,6 +150,13 @@ class ProdukResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+            ])
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(ProdukExporter::class)
+                    ->label('Export Excel')
+                    ->color('success')
+                    ->icon('heroicon-o-archive-box-arrow-down'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
