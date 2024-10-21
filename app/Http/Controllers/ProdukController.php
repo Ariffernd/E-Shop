@@ -36,10 +36,9 @@ class ProdukController extends Controller
 
     public function Bayar(Request $request)
     {
-        $qty = 2;
-        $ongkir = 10000;
+        $qty = $request->input('qty');
         $harga = $request->input('harga');
-        $total = abs($harga * $qty) ;
+        $total = $harga * $qty;
         $produk = $request->input('nama_produk');
 
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
@@ -64,7 +63,7 @@ class ProdukController extends Controller
         $snapToken = Snap::getSnapToken($params);
 
         // Pass Snap Token to view
-        return view('Shop.res.checkout', ['snapToken' => $snapToken],);
+        return view('Shop.res.checkout', ['snapToken' => $snapToken]);
     }
 
 

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Shop;
 
-use App\Filament\Exports\Shop\ProdukExporter;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
@@ -12,9 +11,13 @@ use Illuminate\Http\Request;
 use App\Models\Shop\Kategori;
 use App\Models\Shop\SubKategori;
 use Filament\Resources\Resource;
+use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Controllers\ProdukController;
+use Illuminate\Database\Eloquent\Collection;
+use App\Filament\Exports\Shop\ProdukExporter;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Shop\ProdukResource\Pages;
 use App\Filament\Resources\Shop\ProdukResource\RelationManagers;
@@ -140,12 +143,16 @@ class ProdukResource extends Resource
                     ->sortable(),
                 Tables\Columns\ToggleColumn::make('status')
                     ->afterStateUpdated(function ($record, $state) {
-                        // Runs after the state is saved to the database.
                         app()->make(ProdukController::class)->NotifikasiProdukEdit($record);
                     }),
             ])
             ->filters([
-                //
+                SelectFilter::make('kategori')
+                    ->relationship('Kategori', 'kategori')
+                    ->label('Kategori')
+                    ->searchable()
+                    ->preload()
+                    ->attribute('Kategori.kategori')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -161,7 +168,38 @@ class ProdukResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    Tables\Actions\BulkAction::make('Ubah_Status_NonAktif')
+                        ->action(function (Collection $records) {
+                            $records->each->update(['status' => false]);
+                        })
+                        ->label('Non-Aktifkan Produk')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('warning')
+                        ->after(function (Collection $records) {
+                            $records->each(function ($record) {
+                                Notification::make()
+                                    ->title('Produk Berhasil di Non-Aktifkan!')
+                                    ->warning()
+                                    ->send();
+                            });
+                        }),
+
+                    Tables\Actions\BulkAction::make('Ubah_Status_Aktif')
+                        ->action(function (Collection $records) {
+                            $records->each->update(['status' => true]);
+                        })
+                        ->label('Aktifkan Produk')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->after(function (Collection $records) {
+                            $records->each(function ($record) {
+                                Notification::make()
+                                    ->title('Produk Berhasil di Aktifkan!')
+                                    ->success()
+                                    ->send();
+                            });
+                        }),
+                ])->label('Ubah Data Secara Masal')
             ]);
     }
 
