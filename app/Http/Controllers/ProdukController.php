@@ -7,6 +7,7 @@ use Midtrans\Snap;
 use App\Models\Shop\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Models\Shop\OrderProduk;
 use Illuminate\Support\Facades\Http;
 
 class ProdukController extends Controller
@@ -26,19 +27,24 @@ class ProdukController extends Controller
 
     public function DataProduk(Request $request)
     {
+        dd($request);
         $id = $request->input('id');
         $nama_produk = $request->input('nama_produk');
         $harga = $request->input('harga');
         $harga = number_format($harga, 0, '', '');
+
+
 
         return view('Shop.res.checkout', compact('id', 'nama_produk', 'harga'));
     }
 
     public function Bayar(Request $request)
     {
+        // dd($request);
+        $id = $request->input('id');
         $qty = $request->input('qty');
         $harga = $request->input('harga');
-        $total = $harga * $qty;
+        $total = $harga+10000;
         $produk = $request->input('nama_produk');
 
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
@@ -53,7 +59,7 @@ class ProdukController extends Controller
             ],
             'item_details' => [
                 [
-                    'id' => $produk,
+                    'id' => $id,
                     'name' => $produk,
                     'price' => $total,
                     'quantity' => $qty,
@@ -61,6 +67,20 @@ class ProdukController extends Controller
             ],
         ];
         $snapToken = Snap::getSnapToken($params);
+
+        $data = new OrderProduk();
+        $data->produk_id = $id;
+        $data->order_id = rand();
+        $data->qty = $qty;
+        $data->snap_id = $snapToken;
+        $data->nama = $produk;
+        $data->harga = $harga;
+        $data->total_bayar = $total;
+        $data->status_pemesanan = 'pending';
+        $data->metode_pembayaran = 'Midtrans';
+        $data->status_transaksi = 'pending';
+        $data->save();
+
 
         // Pass Snap Token to view
         return view('Shop.res.checkout', ['snapToken' => $snapToken]);

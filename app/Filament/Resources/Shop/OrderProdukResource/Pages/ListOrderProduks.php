@@ -10,5 +10,10 @@ class ListOrderProduks extends ListRecords
 {
     protected static string $resource = OrderProdukResource::class;
 
-
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\CreateAction::make(),
+        ];
+    }
 }
